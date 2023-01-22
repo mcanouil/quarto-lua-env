@@ -4,8 +4,16 @@ filters:
   - lua-env
 ---
 
-## Heading
+## Shortcodes
+
+```markdown
+{{{< lua-env quarto.doc.input_file >}}}
+```
 
 {{< lua-env quarto.doc.input_file >}}
+
+```markdown
+{{{< meta lua-env.quarto.doc.input_file >}}}
+```
 
 {{< meta lua-env.quarto.doc.input_file >}}
