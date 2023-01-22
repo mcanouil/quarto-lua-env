@@ -1,0 +1,11 @@
+---
+title: "lua-env Example"
+filters:
+  - lua-env
+---
+
+## Heading
+
+{{< lua-env quarto.doc.input_file >}}
+
+{{< meta lua-env.quarto.doc.input_file >}}
