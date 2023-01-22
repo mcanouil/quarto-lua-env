@@ -26,7 +26,6 @@ local function get_strings(obj)
 end
 
 function Meta(meta)
-  -- meta["lua-env"] = {}
   meta["lua-env"] = { ["quarto"] = get_strings(quarto) }
   return meta
 end
