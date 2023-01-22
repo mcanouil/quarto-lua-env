@@ -1,6 +1,6 @@
 # `lua-env` Extension For Quarto
 
-`lua-env` is a work in progress extension for [Quarto](https://quarto.org) that provides access to the `quarto` LUA environment as metadata.
+`lua-env` is a work in progress extension for [Quarto](https://quarto.org) to provide access to the `quarto` LUA object.
 
 ## Installing
 
@@ -20,7 +20,7 @@ filters:
   - lua-env
 ```
 
-This will give you access to `quarto` LUA internal variables using any of the below shortcodes:
+This will give you access to the `quarto` LUA internal object using any of the below shortcodes:
 
 ```markdown
 {{< lua-env quarto.doc.input_file >}}
