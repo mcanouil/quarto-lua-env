@@ -25,21 +25,6 @@ local function get_strings(obj)
   return quarto_array
 end
 
-local function split(str, sep)
-  local fields = {}
-  local pattern = string.format("([^%s]+)", sep)
-  str:gsub(pattern, function(c) fields[#fields+1] = c end)
-  return fields
-end
-
-local function get_value(fields, obj)
-  local value = obj
-  for _, field in ipairs(fields) do
-    value = value[field]
-  end
-  return value
-end
-
 function Meta(meta)
   -- meta["lua-env"] = {}
   meta["lua-env"] = { ["quarto"] = get_strings(quarto) }
