@@ -39,7 +39,7 @@ local function is_empty(obj)
   end
 end
 
-local function is_type_scalar(obj)
+local function is_type_simple(obj)
   return pandoc.utils.type(obj) == "string" or pandoc.utils.type(obj) == "number" or pandoc.utils.type(obj) == "boolean"
 end
 
@@ -47,14 +47,14 @@ local function is_function_userdata(obj)
   return pandoc.utils.type(obj) == "function" or pandoc.utils.type(obj) == "userdata"
 end
 
-local function get_strings(obj)
+local function get_values(obj)
   local quarto_array = {}
   if not is_empty(obj) then
-    if not is_type_scalar(obj) and not is_function_userdata(obj) then
+    if not is_type_simple(obj) and not is_function_userdata(obj) then
       for k, v in pairs(obj) do
         if not is_empty(v) then
-          if not is_type_scalar(v) and not is_function_userdata(v) then
-            local quarto_array_temp = get_strings(v)
+          if not is_type_simple(v) and not is_function_userdata(v) then
+            local quarto_array_temp = get_values(v)
             if not is_empty(quarto_array_temp) then
               quarto_array[k] = quarto_array_temp
             end
@@ -72,15 +72,15 @@ end
 
 function Meta(meta)
   meta["lua-env"] = {
-    ["quarto"] = get_strings(quarto),
+    ["quarto"] = get_values(quarto),
     ["pandoc"] = {
-      ["PANDOC_STATE"] = get_strings(PANDOC_STATE),
-      ["FORMAT"] = get_strings(FORMAT),
-      ["PANDOC_READER_OPTIONS"] = get_strings(PANDOC_READER_OPTIONS),
-      ["PANDOC_WRITER_OPTIONS"] = get_strings(PANDOC_WRITER_OPTIONS),
+      ["PANDOC_STATE"] = get_values(PANDOC_STATE),
+      ["FORMAT"] = get_values(FORMAT),
+      ["PANDOC_READER_OPTIONS"] = get_values(PANDOC_READER_OPTIONS),
+      ["PANDOC_WRITER_OPTIONS"] = get_values(PANDOC_WRITER_OPTIONS),
       ["PANDOC_VERSION"] = tostring(PANDOC_VERSION),
       ["PANDOC_API_VERSION"] = tostring(PANDOC_API_VERSION),
-      ["PANDOC_SCRIPT_FILE"] = get_strings(PANDOC_SCRIPT_FILE)
+      ["PANDOC_SCRIPT_FILE"] = get_values(PANDOC_SCRIPT_FILE)
     }
   }
   -- quarto.log.output(meta["lua-env"])
