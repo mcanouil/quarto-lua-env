@@ -6,6 +6,8 @@ filters:
 
 ## Shortcodes
 
+### Quarto
+
 ```markdown
 {{{< lua-env quarto.doc.input_file >}}}
 ```
@@ -17,3 +19,17 @@ filters:
 ```
 
 {{< meta lua-env.quarto.doc.input_file >}}
+
+### Pandoc
+
+```markdown
+{{{< lua-env pandoc.PANDOC_VERSION >}}}
+```
+
+{{< lua-env pandoc.PANDOC_VERSION >}}
+
+```markdown
+{{{< meta lua-env.pandoc.PANDOC_VERSION >}}}
+```
+
+{{< meta lua-env.pandoc.PANDOC_VERSION >}}
