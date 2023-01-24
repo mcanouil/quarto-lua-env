@@ -48,26 +48,26 @@ local function is_function_userdata(obj)
 end
 
 local function get_values(obj)
-  local quarto_array = {}
+  local values_array = {}
   if not is_empty(obj) then
     if not is_type_simple(obj) and not is_function_userdata(obj) then
       for k, v in pairs(obj) do
         if not is_empty(v) then
           if not is_type_simple(v) and not is_function_userdata(v) then
-            local quarto_array_temp = get_values(v)
-            if not is_empty(quarto_array_temp) then
-              quarto_array[k] = quarto_array_temp
+            local values_array_temp = get_values(v)
+            if not is_empty(values_array_temp) then
+              values_array[k] = values_array_temp
             end
           elseif pandoc.utils.type(v) ~= "table" and not is_function_userdata(v) then
-            quarto_array[k] = v
+            values_array[k] = v
           end
         end
       end
     elseif pandoc.utils.type(obj) ~= "table" and not is_function_userdata(obj) then
-      quarto_array[pandoc.utils.stringify(obj)] = obj
+      values_array[pandoc.utils.stringify(obj)] = obj
     end
   end
-  return quarto_array
+  return values_array
 end
 
 function Meta(meta)
