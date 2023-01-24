@@ -22,34 +22,67 @@
 # SOFTWARE.
 ]]
 
-local function is_empty(s)
-  return s == nil or s == ''
+local function is_empty(obj)
+  local function length(x)
+    local count = 0
+    if x ~= nil then
+      for _ in pairs(x) do
+        count = count + 1
+      end
+    end
+    return count
+  end
+  if pandoc.utils.type(obj) == "table" or pandoc.utils.type(obj) == "List" then
+    return obj == nil or obj == '' or length(obj) == 0
+  else 
+    return obj == nil or obj == ''
+  end
+end
+
+local function is_type_scalar(obj)
+  return pandoc.utils.type(obj) == "string" or pandoc.utils.type(obj) == "number" or pandoc.utils.type(obj) == "boolean"
+end
+
+local function is_function_userdata(obj)
+  return pandoc.utils.type(obj) == "function" or pandoc.utils.type(obj) == "userdata"
 end
 
 local function get_strings(obj)
   local quarto_array = {}
-  if type(obj) == "table" then
-    for k, v in pairs(obj) do
-      if type(v) == "table" then
-        local quarto_array_temp = get_strings(v)
-        local tab_size = 0
-        for _ in pairs(quarto_array_temp) do
-          tab_size = tab_size + 1
+  if not is_empty(obj) then
+    if not is_type_scalar(obj) and not is_function_userdata(obj) then
+      for k, v in pairs(obj) do
+        if not is_empty(v) then
+          if not is_type_scalar(v) and not is_function_userdata(v) then
+            local quarto_array_temp = get_strings(v)
+            if not is_empty(quarto_array_temp) then
+              quarto_array[k] = quarto_array_temp
+            end
+          elseif pandoc.utils.type(v) ~= "table" and not is_function_userdata(v) then
+            quarto_array[k] = v
+          end
         end
-        if not is_empty(tab_size) and tab_size > 0 then
-          quarto_array[k] = quarto_array_temp
-        end
-      elseif type(v) == "string"then
-        quarto_array[k] = v
       end
+    elseif pandoc.utils.type(obj) ~= "table" and not is_function_userdata(obj) then
+      quarto_array[pandoc.utils.stringify(obj)] = obj
     end
-  elseif type(obj) == "string" then
-    quarto_array[pandoc.utils.stringify(obj)] = obj
   end
   return quarto_array
 end
 
 function Meta(meta)
-  meta["lua-env"] = { ["quarto"] = get_strings(quarto) }
+  meta["lua-env"] = {
+    ["quarto"] = get_strings(quarto),
+    ["pandoc"] = {
+      ["PANDOC_STATE"] = get_strings(PANDOC_STATE),
+      ["FORMAT"] = get_strings(FORMAT),
+      ["PANDOC_READER_OPTIONS"] = get_strings(PANDOC_READER_OPTIONS),
+      ["PANDOC_WRITER_OPTIONS"] = get_strings(PANDOC_WRITER_OPTIONS),
+      ["PANDOC_VERSION"] = tostring(PANDOC_VERSION),
+      ["PANDOC_API_VERSION"] = tostring(PANDOC_API_VERSION),
+      ["PANDOC_SCRIPT_FILE"] = get_strings(PANDOC_SCRIPT_FILE)
+    }
+  }
+  -- quarto.log.output(meta["lua-env"])
   return meta
 end
