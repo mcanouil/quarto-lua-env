@@ -1,4 +1,4 @@
-# `lua-env` Extension For Quarto
+# Lua Env Extension For Quarto
 
 `lua-env` is an extension for [Quarto](https://quarto.org) to provide access to LUA objects as metadata.
 
