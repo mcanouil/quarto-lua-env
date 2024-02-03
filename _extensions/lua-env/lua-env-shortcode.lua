@@ -1,7 +1,7 @@
 --[[
 # MIT License
 #
-# Copyright (c) Mickaël Canouil
+# Copyright (c) 2024 Mickaël Canouil
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,11 @@ return {
   ['lua-env'] = function(args, kwargs, meta)
     if #args > 0 then
       local var_name = pandoc.utils.stringify(pandoc.Span(args[1]))
-      return get_value(split(var_name, "."), meta["lua-env"])
+      if args[1] == "quarto.version" then
+        return table.concat(get_value(split(var_name, "."), meta["lua-env"]), '.')
+      else
+        return get_value(split(var_name, "."), meta["lua-env"])
+      end
     else
       return nil
     end
