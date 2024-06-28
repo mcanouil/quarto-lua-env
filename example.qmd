@@ -8,11 +8,18 @@ filters:
 
 ### Quarto
 
+::: {.columns}
+
+:::: {.column}
+
 ```markdown
 {{{< lua-env quarto.doc.input_file >}}}
 ```
 
 {{< lua-env quarto.doc.input_file >}}
+
+::::
+:::: {.column}
 
 ```markdown
 {{{< meta lua-env.quarto.doc.input_file >}}}
@@ -20,7 +27,13 @@ filters:
 
 {{< meta lua-env.quarto.doc.input_file >}}
 
+::::
+:::
+
 ### Pandoc
+
+::: {.columns}
+:::: {.column}
 
 ```markdown
 {{{< lua-env pandoc.PANDOC_VERSION >}}}
@@ -28,8 +41,35 @@ filters:
 
 {{< lua-env pandoc.PANDOC_VERSION >}}
 
+::::
+:::: {.column}
+
 ```markdown
 {{{< meta lua-env.pandoc.PANDOC_VERSION >}}}
 ```
 
 {{< meta lua-env.pandoc.PANDOC_VERSION >}}
+
+::::
+:::
+
+::: {.columns}
+:::: {.column}
+
+```markdown
+{{{< lua-env pandoc.FORMAT >}}}
+```
+
+{{< lua-env pandoc.FORMAT >}}
+
+::::
+:::: {.column}
+
+```markdown
+{{{< meta lua-env.pandoc.FORMAT >}}}
+```
+
+{{< meta lua-env.pandoc.FORMAT >}}
+
+::::
+:::
