@@ -75,7 +75,7 @@ function Meta(meta)
     ["quarto"] = get_values(quarto),
     ["pandoc"] = {
       ["PANDOC_STATE"] = get_values(PANDOC_STATE),
-      ["FORMAT"] = get_values(FORMAT),
+      ["FORMAT"] = tostring(FORMAT),
       ["PANDOC_READER_OPTIONS"] = get_values(PANDOC_READER_OPTIONS),
       ["PANDOC_WRITER_OPTIONS"] = get_values(PANDOC_WRITER_OPTIONS),
       ["PANDOC_VERSION"] = tostring(PANDOC_VERSION),
