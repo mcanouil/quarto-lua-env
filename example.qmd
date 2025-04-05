@@ -1,5 +1,6 @@
 ---
 title: "lua-env Example"
+format: html
 filters:
   - lua-env
 ---
