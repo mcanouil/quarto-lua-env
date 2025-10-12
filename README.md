@@ -45,6 +45,34 @@ lua-env:
 
 See [Pandoc LUA API - Global Variables](https://pandoc.org/lua-filters.html#global-variables) for more information about Pandoc global variables.
 
+## JSON Export
+
+You can export the `lua-env` metadata to a JSON file by configuring the `json` option.
+
+By default, no JSON file is written (`json: false`).
+
+To enable JSON export with the default filename:
+
+```yaml
+filters:
+  - lua-env
+extensions:
+  lua-env:
+    json: true  # Exports to "lua-env.json"
+```
+
+To specify a custom file path:
+
+```yaml
+filters:
+  - lua-env
+extensions:
+  lua-env:
+    json: "custom-path.json"  # Exports to "custom-path.json"
+```
+
+The JSON file will contain all the LUA environment metadata collected during document rendering.
+
 ## Example
 
 Here is the source code for a minimal example: [example.qmd](example.qmd).
