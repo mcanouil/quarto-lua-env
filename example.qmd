@@ -3,15 +3,18 @@ title: "lua-env Example"
 format: html
 filters:
   - lua-env
+extensions:
+  lua-env:
+    json: true  # Export metadata to lua-env.json
 ---
 
 ## Shortcodes
 
 ### Quarto
 
-::: {.columns}
+:::: {layout-ncol="2"}
 
-:::: {.column}
+:::: {}
 
 ```markdown
 {{{< lua-env quarto.doc.input_file >}}}
@@ -19,8 +22,9 @@ filters:
 
 {{< lua-env quarto.doc.input_file >}}
 
-::::
-:::: {.column}
+:::
+
+:::: {}
 
 ```markdown
 {{{< meta lua-env.quarto.doc.input_file >}}}
@@ -28,13 +32,13 @@ filters:
 
 {{< meta lua-env.quarto.doc.input_file >}}
 
-::::
+:::
 :::
 
 ### Pandoc
 
-::: {.columns}
-:::: {.column}
+:::: {layout-ncol="2"}
+:::: {}
 
 ```markdown
 {{{< lua-env pandoc.PANDOC_VERSION >}}}
@@ -42,8 +46,8 @@ filters:
 
 {{< lua-env pandoc.PANDOC_VERSION >}}
 
-::::
-:::: {.column}
+:::
+:::: {}
 
 ```markdown
 {{{< meta lua-env.pandoc.PANDOC_VERSION >}}}
@@ -51,11 +55,11 @@ filters:
 
 {{< meta lua-env.pandoc.PANDOC_VERSION >}}
 
-::::
+:::
 :::
 
-::: {.columns}
-:::: {.column}
+:::: {layout-ncol="2"}
+:::: {}
 
 ```markdown
 {{{< lua-env pandoc.FORMAT >}}}
@@ -63,8 +67,8 @@ filters:
 
 {{< lua-env pandoc.FORMAT >}}
 
-::::
-:::: {.column}
+:::
+:::: {}
 
 ```markdown
 {{{< meta lua-env.pandoc.FORMAT >}}}
@@ -72,5 +76,29 @@ filters:
 
 {{< meta lua-env.pandoc.FORMAT >}}
 
-::::
 :::
+:::
+
+## JSON Export
+
+This document is configured to export the `lua-env` metadata to a JSON file.
+
+By default, no JSON file is written (`json: false`). To enable JSON export, set `json: true` or provide a custom file path.
+
+The YAML header includes:
+
+```yaml
+extensions:
+  lua-env:
+    json: true  # Export metadata to lua-env.json
+```
+
+This will create a file named `lua-env.json` in the same directory as this document, containing all the LUA environment metadata collected during rendering.
+
+You can also specify a custom file path:
+
+```yaml
+extensions:
+  lua-env:
+    json: "custom-output.json"
+```
