@@ -22,6 +22,9 @@
 # SOFTWARE.
 ]]
 
+--- Extension name constant
+local EXTENSION_NAME = "lua-env"
+
 --- Load utils module
 local utils_path = quarto.utils.resolve_path("_modules/utils.lua")
 local utils = require(utils_path)
@@ -38,9 +41,9 @@ local function export_to_json(metadata, filepath)
   if file then
     file:write(json_content)
     file:close()
-    quarto.log.output("Exported lua-env metadata to: " .. filepath)
+    utils.log_output(EXTENSION_NAME, "Exported metadata to: " .. filepath)
   else
-    quarto.log.error("Failed to write JSON file: " .. (err or "unknown error"))
+    utils.log_error(EXTENSION_NAME, "Failed to write JSON file: " .. (err or "unknown error"))
   end
 end
 

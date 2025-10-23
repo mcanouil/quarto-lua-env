@@ -22,6 +22,9 @@
 # SOFTWARE.
 ]]
 
+--- Extension name constant
+local EXTENSION_NAME = "lua-env"
+
 --- Load utils module
 local utils_path = quarto.utils.resolve_path("_modules/utils.lua")
 local utils = require(utils_path)
@@ -29,12 +32,12 @@ local utils = require(utils_path)
 return {
   ['lua-env'] = function(args, kwargs, meta)
     if #args == 0 then
-      quarto.log.warning("[lua-env] No variable name provided")
+      utils.log_warning(EXTENSION_NAME, "No variable name provided.")
       return pandoc.Null()
     end
 
     if not meta["lua-env"] then
-      quarto.log.warning("[lua-env] No lua-env metadata found")
+      utils.log_warning(EXTENSION_NAME, "No lua-env metadata found.")
       return pandoc.Null()
     end
 
@@ -42,7 +45,7 @@ return {
     local value = utils.get_value(utils.split(var_name, "."), meta["lua-env"])
 
     if not value then
-      quarto.log.warning("[lua-env] Variable '" .. var_name .. "' not found in lua-env metadata")
+      utils.log_warning(EXTENSION_NAME, "Variable '" .. var_name .. "' not found in lua-env metadata.")
       return pandoc.Null()
     end
 
