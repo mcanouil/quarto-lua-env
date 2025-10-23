@@ -26,8 +26,7 @@
 local EXTENSION_NAME = "lua-env"
 
 --- Load utils module
-local utils_path = quarto.utils.resolve_path("_modules/utils.lua")
-local utils = require(utils_path)
+local utils = require(quarto.utils.resolve_path("_modules/utils.lua"):gsub("%.lua$", ""))
 
 --- @type string|nil The JSON file path to export metadata to
 local json_file = nil
