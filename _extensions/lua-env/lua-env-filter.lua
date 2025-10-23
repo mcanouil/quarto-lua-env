@@ -93,7 +93,7 @@ end
 --- Populate lua-env metadata
 --- @param meta table The document metadata table
 --- @return table The metadata table with lua-env populated
-function populate_lua_env(meta)
+local function populate_lua_env(meta)
   meta["lua-env"] = {
     ["quarto"] = get_values(quarto),
     ["pandoc"] = {
@@ -106,12 +106,12 @@ function populate_lua_env(meta)
       ["PANDOC_SCRIPT_FILE"] = get_values(PANDOC_SCRIPT_FILE)
     }
   }
-  
+
   -- Export to JSON if configured
   if json_file then
     export_to_json(meta["lua-env"], json_file)
   end
-  
+
   -- quarto.log.output(meta["lua-env"])
   return meta
 end
