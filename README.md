@@ -2,16 +2,17 @@
 
 `lua-env` is an extension for [Quarto](https://quarto.org) to provide access to LUA objects as metadata.
 
-## Installing
+## Installation
 
 ```bash
 quarto add mcanouil/quarto-lua-env
 ```
 
 This will install the extension under the `_extensions` subdirectory.
+
 If you're using version control, you will want to check in this directory.
 
-## Using
+## Usage
 
 Add the following to your YAML header:
 
@@ -76,3 +77,7 @@ The JSON file will contain all the LUA environment metadata collected during doc
 ## Example
 
 Here is the source code for a minimal example: [example.qmd](example.qmd).
+
+Output of `example.qmd`:
+
+- [HTML](https://m.canouil.dev/quarto-lua-env/)
