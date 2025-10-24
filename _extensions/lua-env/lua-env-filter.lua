@@ -114,7 +114,6 @@ local function populate_lua_env(meta)
     export_to_json(meta['lua-env'], json_file)
   end
 
-  -- quarto.log.output(meta['lua-env'])
   return meta
 end
 
