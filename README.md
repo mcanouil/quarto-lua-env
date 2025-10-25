@@ -16,10 +16,21 @@ If you're using version control, you will want to check in this directory.
 
 Add the following to your YAML header:
 
-```yaml
-filters:
-  - lua-env
-```
+- Old (<1.8.21):
+
+  ```yml
+  filters:
+    - quarto
+    - lua-env
+  ```
+
+- New (>=1.8.21):
+
+  ```yml
+  filters:
+    - path: lua-env
+      at: post-quarto
+  ```
 
 This will give you access to the `quarto` and several Pandoc LUA internal objects using any of the below shortcodes:
 
@@ -55,8 +66,6 @@ By default, no JSON file is written (`json: false`).
 To enable JSON export with the default filename:
 
 ```yaml
-filters:
-  - lua-env
 extensions:
   lua-env:
     json: true  # Exports to "lua-env.json"
@@ -65,8 +74,6 @@ extensions:
 To specify a custom file path:
 
 ```yaml
-filters:
-  - lua-env
 extensions:
   lua-env:
     json: "custom-path.json"  # Exports to "custom-path.json"

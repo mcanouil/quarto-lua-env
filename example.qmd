@@ -1,5 +1,6 @@
 ---
 title: "lua-env Example"
+toc: true
 format: html
 filters:
   - lua-env
@@ -7,6 +8,66 @@ extensions:
   lua-env:
     json: true  # Export metadata to lua-env.json
 ---
+
+## Introduction
+
+`lua-env` is an extension for [Quarto](https://quarto.org) to provide access to LUA objects as metadata.
+
+This extension gives you access to the `quarto` object and several Pandoc LUA internal objects using shortcodes.
+
+## Installation
+
+```bash
+quarto add mcanouil/quarto-lua-env
+```
+
+This will install the extension under the `_extensions` subdirectory.
+
+If you're using version control, you will want to check in this directory.
+
+## Usage
+
+Add the following to your YAML header:
+
+- Old (<1.8.21):
+
+  ```yml
+  filters:
+    - quarto
+    - lua-env
+  ```
+
+- New (>=1.8.21):
+
+  ```yml
+  filters:
+    - path: lua-env
+      at: post-quarto
+  ```
+
+This enables access to LUA objects using two shortcode formats:
+
+- `{{< lua-env quarto.doc.input_file >}}` - Direct access via shortcode.
+- `{{< meta lua-env.quarto.doc.input_file >}}` - Access via metadata.
+
+## Available LUA Objects
+
+The following LUA objects are available as metadata:
+
+```yaml
+lua-env:
+  quarto: "quarto"
+  pandoc:
+    PANDOC_STATE: "PANDOC_STATE"
+    FORMAT: "FORMAT"
+    PANDOC_READER_OPTIONS: "PANDOC_READER_OPTIONS"
+    PANDOC_WRITER_OPTIONS: "PANDOC_WRITER_OPTIONS"
+    PANDOC_VERSION: "PANDOC_VERSION"
+    PANDOC_API_VERSION: "PANDOC_API_VERSION"
+    PANDOC_SCRIPT_FILE: "PANDOC_SCRIPT_FILE"
+```
+
+See [Pandoc LUA API - Global Variables](https://pandoc.org/lua-filters.html#global-variables) for more information about Pandoc global variables.
 
 ## Shortcodes
 
