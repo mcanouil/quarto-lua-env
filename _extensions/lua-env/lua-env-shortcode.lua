@@ -22,32 +22,36 @@
 # SOFTWARE.
 ]]
 
-local function split(str, sep)
-  local fields = {}
-  local pattern = string.format("([^%s]+)", sep)
-  str:gsub(pattern, function(c) fields[#fields+1] = c end)
-  return fields
-end
+--- Extension name constant
+local EXTENSION_NAME = 'lua-env'
 
-local function get_value(fields, obj)
-  local value = obj
-  for _, field in ipairs(fields) do
-    value = value[field]
-  end
-  return value
-end
+--- Load utils module
+local utils = require(quarto.utils.resolve_path('_modules/utils.lua'):gsub('%.lua$', ''))
 
 return {
   ['lua-env'] = function(args, kwargs, meta)
-    if #args > 0 then
-      local var_name = pandoc.utils.stringify(pandoc.Span(args[1]))
-      if args[1] == "quarto.version" then
-        return table.concat(get_value(split(var_name, "."), meta["lua-env"]), '.')
-      else
-        return get_value(split(var_name, "."), meta["lua-env"])
-      end
+    if #args == 0 then
+      utils.log_warning(EXTENSION_NAME, 'No variable name provided.')
+      return pandoc.Null()
+    end
+
+    if not meta['lua-env'] then
+      utils.log_warning(EXTENSION_NAME, 'No lua-env metadata found.')
+      return pandoc.Null()
+    end
+
+    local var_name = utils.stringify(pandoc.Span(args[1]))
+    local value = utils.get_value(utils.split(var_name, '.'), meta['lua-env'])
+
+    if not value then
+      utils.log_warning(EXTENSION_NAME, 'Variable \'' .. var_name .. '\' not found in lua-env metadata.')
+      return pandoc.Null()
+    end
+
+    if args[1] == 'quarto.version' and type(value) == 'table' then
+      return table.concat(value, '.')
     else
-      return nil
+      return value
     end
   end
 }
