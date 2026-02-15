@@ -1,0 +1,24 @@
+# _schema.yml for "lua-env" filter and shortcode extension
+# Describes options and shortcode arguments for IDE tooling and runtime validation.
+
+# Extension-level metadata options.
+# Configured in _quarto.yml, _metadata.yml, or document front matter:
+#   extensions:
+#     lua-env:
+#       json: true
+options:
+  json:
+    type: string
+    default: "false"
+    description: "Export the Lua environment metadata to a JSON file. Set to 'true' for 'lua-env.json', 'false' to disable, or a custom file path."
+
+# Per-shortcode schemas.
+# Describes positional arguments for {{< lua-env >}}.
+shortcodes:
+  lua-env:
+    description: "Outputs the value of a Lua environment variable from the collected metadata."
+    arguments:
+      - name: variable
+        type: string
+        required: true
+        description: "Dot-separated path to the variable (e.g., 'quarto.version', 'pandoc.PANDOC_VERSION')."
