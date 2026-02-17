@@ -8,9 +8,9 @@
 #       json: true
 options:
   json:
-    type: string
-    default: "false"
-    description: "Export the Lua environment metadata to a JSON file. Set to 'true' for 'lua-env.json', 'false' to disable, or a custom file path."
+    type: [boolean, string]
+    default: false
+    description: "Export the Lua environment metadata to a JSON file. Set to true for 'lua-env.json', false to disable, or a custom file path."
 
 # Per-shortcode schemas.
 # Describes positional arguments for {{< lua-env >}}.
