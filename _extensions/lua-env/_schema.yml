@@ -6,6 +6,9 @@
 #   extensions:
 #     lua-env:
 #       json: true
+
+$schema: https://m.canouil.dev/quarto-wizard/assets/schema/v1/extension-schema.json
+
 options:
   json:
     type: [boolean, string]
