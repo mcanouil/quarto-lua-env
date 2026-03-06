@@ -6,8 +6,9 @@
 --- Extension name constant
 local EXTENSION_NAME = 'lua-env'
 
---- Load utils module
+--- Load utils and schema modules
 local utils = require(quarto.utils.resolve_path('_modules/utils.lua'):gsub('%.lua$', ''))
+local schema = require(quarto.utils.resolve_path('_modules/schema.lua'):gsub('%.lua$', ''))
 
 --- @type string|nil The JSON file path to export metadata to
 local json_file = nil
@@ -31,17 +32,16 @@ end
 --- @param meta table The document metadata table
 --- @return table The metadata table
 local function get_configuration(meta)
-  local meta_json = utils.get_metadata_value(meta, 'lua-env', 'json')
+  local validated = schema.validate_options(meta, EXTENSION_NAME, quarto.utils.resolve_path('_schema.yml'))
+  local meta_json = validated.json
 
   -- Set JSON file path
-  if not utils.is_empty(meta_json) then
-    if meta_json == 'true' then
-      json_file = 'lua-env.json'
-    elseif meta_json == 'false' then
-      json_file = nil
-    else
-      json_file = meta_json --[[@as string]]
-    end
+  if meta_json == true then
+    json_file = 'lua-env.json'
+  elseif meta_json == false or meta_json == nil then
+    json_file = nil
+  elseif type(meta_json) == 'string' and meta_json ~= '' then
+    json_file = meta_json
   end
 
   return meta
