@@ -6,8 +6,11 @@
 --- Extension name constant
 local EXTENSION_NAME = 'lua-env'
 
---- Load utils module
-local utils = require(quarto.utils.resolve_path('_modules/utils.lua'):gsub('%.lua$', ''))
+--- Load modules
+local str = require(quarto.utils.resolve_path('_modules/string.lua'):gsub('%.lua$', ''))
+local log = require(quarto.utils.resolve_path('_modules/logging.lua'):gsub('%.lua$', ''))
+local meta_mod = require(quarto.utils.resolve_path('_modules/metadata.lua'):gsub('%.lua$', ''))
+local pdoc = require(quarto.utils.resolve_path('_modules/pandoc-helpers.lua'):gsub('%.lua$', ''))
 
 --- @type string|nil The JSON file path to export metadata to
 local json_file = nil
@@ -21,9 +24,9 @@ local function export_to_json(metadata, filepath)
   if file then
     file:write(json_content)
     file:close()
-    utils.log_output(EXTENSION_NAME, 'Exported metadata to: ' .. filepath)
+    log.log_output(EXTENSION_NAME, 'Exported metadata to: ' .. filepath)
   else
-    utils.log_error(EXTENSION_NAME, 'Failed to write JSON file: ' .. (err or 'unknown error'))
+    log.log_error(EXTENSION_NAME, 'Failed to write JSON file: ' .. (err or 'unknown error'))
   end
 end
 
@@ -31,10 +34,10 @@ end
 --- @param meta table The document metadata table
 --- @return table The metadata table
 local function get_configuration(meta)
-  local meta_json = utils.get_metadata_value(meta, 'lua-env', 'json')
+  local meta_json = meta_mod.get_metadata_value(meta, 'lua-env', 'json')
 
   -- Set JSON file path
-  if not utils.is_empty(meta_json) then
+  if not str.is_empty(meta_json) then
     if meta_json == 'true' then
       json_file = 'lua-env.json'
     elseif meta_json == 'false' then
@@ -52,21 +55,21 @@ end
 --- @return table A table containing the extracted values
 local function get_values(obj)
   local values_array = {}
-  if not utils.is_object_empty(obj) then
-    if not utils.is_type_simple(obj) and not utils.is_function_userdata(obj) then
+  if not pdoc.is_object_empty(obj) then
+    if not pdoc.is_type_simple(obj) and not pdoc.is_function_userdata(obj) then
       for k, v in pairs(obj) do
-        if not utils.is_object_empty(v) then
-          if not utils.is_type_simple(v) and not utils.is_function_userdata(v) then
+        if not pdoc.is_object_empty(v) then
+          if not pdoc.is_type_simple(v) and not pdoc.is_function_userdata(v) then
             local values_array_temp = get_values(v)
-            if not utils.is_object_empty(values_array_temp) then
+            if not pdoc.is_object_empty(values_array_temp) then
               values_array[k] = values_array_temp
             end
-          elseif pandoc.utils.type(v) ~= 'table' and not utils.is_function_userdata(v) then
+          elseif pandoc.utils.type(v) ~= 'table' and not pdoc.is_function_userdata(v) then
             values_array[k] = v
           end
         end
       end
-    elseif pandoc.utils.type(obj) ~= 'table' and not utils.is_function_userdata(obj) then
+    elseif pandoc.utils.type(obj) ~= 'table' and not pdoc.is_function_userdata(obj) then
       values_array[pandoc.utils.stringify(obj)] = obj
     end
   end
