@@ -2,15 +2,12 @@
 
 ## Unreleased
 
-## 1.5.0 (2026-05-28)
-
 ### New Features
 
 - feat: Add `json-include` whitelist of dot-separated paths to keep in the JSON export.
 - feat: Add `json-exclude` blacklist of dot-separated paths to drop from the JSON export.
 - feat: Add `json-exclude-sensitive` option (default `true`) to redact host filesystem paths (`quarto.doc.input_file`, `quarto.doc.output_file`, `quarto.project.directory`, `quarto.project.output_directory`, `pandoc.PANDOC_SCRIPT_FILE`).
 - feat: Add `json-warn-on-server` option (default `true`) to warn when JSON export is enabled in CI or server contexts.
-- feat: Document the JSON export schema in the README and example.
 
 ### Bug Fixes
 
