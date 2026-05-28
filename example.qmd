@@ -13,7 +13,11 @@ filters:
   - lua-env
 extensions:
   lua-env:
-    json: true  # Export metadata to lua-env.json
+    json: true
+    json-exclude:
+      - quarto._quarto
+    json-exclude-sensitive: true
+    json-warn-on-server: true
 ---
 
 ## Introduction
@@ -25,7 +29,7 @@ This extension gives you access to the `quarto` object and several Pandoc LUA in
 ## Installation
 
 ```bash
-quarto add mcanouil/quarto-lua-env@1.4.1
+quarto add mcanouil/quarto-lua-env@1.5.0
 ```
 
 This will install the extension under the `_extensions` subdirectory.
@@ -149,21 +153,81 @@ See [Pandoc LUA API - Global Variables](https://pandoc.org/lua-filters.html#glob
 
 ## JSON Export
 
-This document is configured to export the `lua-env` metadata to a JSON file.
-
-By default, no JSON file is written (`json: false`). To enable JSON export, set `json: true` or provide a custom file path.
-
-The YAML header includes:
+This document is configured to export the `lua-env` metadata to a JSON file, with the `quarto._quarto` branch removed and sensitive filesystem paths redacted.
 
 ```yaml
 extensions:
   lua-env:
-    json: true  # Export metadata to lua-env.json
+    json: true
+    json-exclude:
+      - quarto._quarto
+    json-exclude-sensitive: true
+    json-warn-on-server: true
 ```
 
-This will create a file named `lua-env.json` in the same directory as this document, containing all the LUA environment metadata collected during rendering.
+By default, no JSON file is written (`json: false`).
+To enable JSON export, set `json: true` (writes to `lua-env.json`) or provide a custom file path.
 
-You can also specify a custom file path:
+### JSON export schema
+
+The exported JSON is an object with two top-level keys, `pandoc` and `quarto`.
+
+```json
+{
+  "pandoc": {
+    "FORMAT": "html",
+    "PANDOC_API_VERSION": "1.23",
+    "PANDOC_VERSION": "3.6.3",
+    "PANDOC_READER_OPTIONS": { },
+    "PANDOC_WRITER_OPTIONS": { },
+    "PANDOC_STATE": { }
+  },
+  "quarto": {
+    "version": [1, 7, 32],
+    "doc": { },
+    "project": { },
+    "log": { },
+    "json": { }
+  }
+}
+```
+
+Container shapes mirror the live Pandoc/Quarto objects.
+Functions and userdata are dropped.
+Empty branches are omitted.
+
+### Filtering options
+
+- `json-include`: array of dot-separated paths to keep (e.g. `pandoc.FORMAT`).
+  Everything outside the listed paths is omitted.
+- `json-exclude`: array of dot-separated paths to drop, applied after the include whitelist.
+- `json-exclude-sensitive` (default `true`): redacts built-in sensitive paths that expose host filesystem layout, namely `quarto.doc.input_file`, `quarto.doc.output_file`, `quarto.project.directory`, `quarto.project.output_directory`, and `pandoc.PANDOC_SCRIPT_FILE`.
+  Set to `false` to include them.
+- `json-warn-on-server` (default `true`): emits a warning when JSON export is enabled in a CI or server context (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `TRAVIS`, `JENKINS_URL`, `BUILDKITE`, `TF_BUILD`).
+  Set to `false` to silence.
+
+For example, to export only the active Pandoc format and Quarto version:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-include:
+      - pandoc.FORMAT
+      - quarto.version
+```
+
+To remove a noisy branch while keeping everything else:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-exclude:
+      - quarto._quarto
+```
+
+To use a custom output filename:
 
 ```yaml
 extensions:
