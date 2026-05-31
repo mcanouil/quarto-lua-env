@@ -1,4 +1,4 @@
-# _schema.yml for "lua-env" filter and shortcode extension
+# Schema for the lua-env extension
 # Describes options and shortcode arguments for IDE tooling and runtime validation.
 
 # Extension-level metadata options.
@@ -11,37 +11,37 @@
 #       json-exclude-sensitive: true
 #       json-warn-on-server: true
 
-$schema: https://m.canouil.dev/quarto-wizard/assets/schema/v1/extension-schema.json
+$schema: https://m.canouil.dev/quarto-wizard/assets/schema/v2/extension-schema.json
 
 options:
   json:
     type: [boolean, string]
     default: false
-    description: "Export the Lua environment metadata to a JSON file. Set to true for 'lua-env.json', false to disable, or a custom file path."
+    description: "Export the Lua environment metadata to a JSON file, using true for 'lua-env.json', false to disable, or a custom file path."
   json-include:
     type: [string, array]
     default: null
-    description: "Whitelist of dot-separated paths to include in the JSON export (e.g. 'pandoc.FORMAT'). Anything outside the listed paths is omitted. Omit to keep every non-excluded path."
+    description: "Whitelist of dot-separated paths to include in the JSON export, omitting anything outside the listed paths."
   json-exclude:
     type: [string, array]
     default: null
-    description: "Blacklist of dot-separated paths to omit from the JSON export. Applied after the include whitelist."
+    description: "Blacklist of dot-separated paths to omit from the JSON export, applied after the include whitelist."
   json-exclude-sensitive:
     type: boolean
     default: true
-    description: "Redact built-in sensitive paths that expose host filesystem layout (input/output file paths, project directories, Pandoc script file). Set to false to include them."
+    description: "Redact built-in sensitive paths that expose host filesystem layout, set to false to include them."
   json-warn-on-server:
     type: boolean
     default: true
-    description: "Emit a warning when JSON export is enabled in a CI or server context (CI, GITHUB_ACTIONS, GITLAB_CI, CIRCLECI, TRAVIS, JENKINS_URL, BUILDKITE, TF_BUILD). Set to false to silence the warning."
+    description: "Emit a warning when JSON export is enabled in a CI or server context, set to false to silence the warning."
 
 # Per-shortcode schemas.
 # Describes positional arguments for {{< lua-env >}}.
 shortcodes:
   lua-env:
-    description: "Outputs the value of a Lua environment variable from the collected metadata."
+    description: "Output the value of a Lua environment variable from the collected metadata."
     arguments:
       - name: variable
         type: string
         required: true
-        description: "Dot-separated path to the variable (e.g., 'quarto.version', 'pandoc.PANDOC_VERSION')."
+        description: "Dot-separated path to the variable, such as 'quarto.version' or 'pandoc.PANDOC_VERSION'."
