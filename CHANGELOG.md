@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.5.0 (2026-05-31)
+
 ### New Features
 
 - feat: Add `json-include` whitelist of dot-separated paths to keep in the JSON export.
