@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+### New Features
+
+- feat: Add `json-include` whitelist of dot-separated paths to keep in the JSON export.
+- feat: Add `json-exclude` blacklist of dot-separated paths to drop from the JSON export.
+- feat: Add `json-exclude-sensitive` option (default `true`) to redact host filesystem paths (`quarto.doc.input_file`, `quarto.doc.output_file`, `quarto.project.directory`, `quarto.project.output_directory`, `pandoc.PANDOC_SCRIPT_FILE`).
+- feat: Add `json-warn-on-server` option (default `true`) to warn when JSON export is enabled in CI or server contexts.
+
+### Bug Fixes
+
+- fix: Coerce boolean metadata robustly, accepting raw Lua booleans, Pandoc `MetaBool`, and the strings `'true'`/`'false'` (case-insensitive).
+- fix: Reset module-level configuration state at the start of each `Meta` pass to prevent cross-document leakage in batch renders.
+
+### Documentation
+
+- docs: Document the JSON export schema, filtering options, and example coverage for the new filter behaviour.
+
 ## 1.4.1 (2026-04-15)
 
 ### Refactoring

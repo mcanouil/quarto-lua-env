@@ -79,7 +79,70 @@ extensions:
     json: "custom-path.json"  # Exports to "custom-path.json"
 ```
 
-The JSON file will contain all the LUA environment metadata collected during document rendering.
+The boolean toggle accepts raw YAML booleans (`true`, `false`), their quoted string forms (`"true"`, `"false"`), and a path string for custom filenames.
+
+### JSON export schema
+
+The exported JSON has two top-level keys, `pandoc` and `quarto`, that mirror the live Pandoc/Quarto Lua objects:
+
+```json
+{
+  "pandoc": {
+    "FORMAT": "html",
+    "PANDOC_API_VERSION": "1.23",
+    "PANDOC_VERSION": "3.6.3",
+    "PANDOC_READER_OPTIONS": { },
+    "PANDOC_WRITER_OPTIONS": { },
+    "PANDOC_STATE": { }
+  },
+  "quarto": {
+    "version": [1, 7, 32],
+    "doc": { },
+    "project": { },
+    "log": { },
+    "json": { }
+  }
+}
+```
+
+Functions and userdata values are dropped.
+Empty branches are pruned.
+
+### Filtering the export
+
+Four sibling options control what ends up in the JSON file:
+
+- `json-include`: array of dot-separated paths to keep (e.g. `pandoc.FORMAT`).
+  Everything outside the listed paths is omitted.
+  Omit to keep every non-excluded path.
+- `json-exclude`: array of dot-separated paths to drop.
+  Applied after the include whitelist.
+- `json-exclude-sensitive` (default `true`): redacts built-in sensitive paths that expose host filesystem layout.
+  The redacted paths are `quarto.doc.input_file`, `quarto.doc.output_file`, `quarto.project.directory`, `quarto.project.output_directory`, and `pandoc.PANDOC_SCRIPT_FILE`.
+  Set to `false` to include them.
+- `json-warn-on-server` (default `true`): emits a warning when JSON export is enabled in a CI or server context (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `TRAVIS`, `JENKINS_URL`, `BUILDKITE`, `TF_BUILD`).
+  Set to `false` to silence the warning.
+
+Example, keeping only the active format and Quarto version:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-include:
+      - pandoc.FORMAT
+      - quarto.version
+```
+
+Example, removing a noisy branch while keeping everything else:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-exclude:
+      - quarto._quarto
+```
 
 ## Example
 
