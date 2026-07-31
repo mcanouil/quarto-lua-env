@@ -1,0 +1,97 @@
+---
+title: "Examples"
+subtitle: "Values from this very render."
+description: "The lua-env shortcode printing the Pandoc and Quarto state of the render that produced this page."
+---
+
+Every value below was read out of the render that produced this page.
+The filter is enabled in this site's `_quarto.yml`:
+
+```yaml
+filters:
+  - path: lua-env
+    at: pre-quarto
+```
+
+## Pandoc
+
+| Source | Value |
+| --- | --- |
+| `{{{< lua-env pandoc.FORMAT >}}}` | {{< lua-env pandoc.FORMAT >}} |
+| `{{{< lua-env pandoc.PANDOC_VERSION >}}}` | {{< lua-env pandoc.PANDOC_VERSION >}} |
+| `{{{< lua-env pandoc.PANDOC_API_VERSION >}}}` | {{< lua-env pandoc.PANDOC_API_VERSION >}} |
+
+: Pandoc globals, as this page was written. {.striped .hover tbl-colwidths="[55,45]"}
+
+Render the same document to another format and `pandoc.FORMAT` changes with it.
+
+## Quarto
+
+| Source | Value |
+| --- | --- |
+| `{{{< lua-env quarto.version >}}}` | {{< lua-env quarto.version >}} |
+
+: The Quarto version that built this page. {.striped .hover tbl-colwidths="[55,45]"}
+
+## Through the `meta` shortcode
+
+Everything sits under the `lua-env` metadata key as well, so Quarto's own shortcode reaches it without the extension's own:
+
+| Source | Value |
+| --- | --- |
+| `{{{< meta lua-env.pandoc.FORMAT >}}}` | {{< meta lua-env.pandoc.FORMAT >}} |
+
+: The same value, read as ordinary metadata. {.striped .hover tbl-colwidths="[55,45]"}
+
+::: {.callout-note}
+The two shortcodes are not interchangeable.
+`meta` prints scalars, and reports `?invalid meta type` for anything else, so a path such as `lua-env.quarto.version`, which is a list of three numbers, needs the extension's own shortcode.
+:::
+
+## Exporting to JSON
+
+This site leaves the export off, since it would write host paths into a file the site then publishes:
+
+```yaml
+extensions:
+  lua-env:
+    json: false
+```
+
+Turning it on writes `lua-env.json` beside the output:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+```
+
+Narrow it to what you actually want, and the file stays readable:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-include:
+      - pandoc.FORMAT
+      - quarto.version
+```
+
+Or keep everything except one noisy branch:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-exclude:
+      - quarto._quarto
+```
+
+::: {.callout-warning}
+`json-exclude-sensitive` defaults to `true` and redacts the input file, the output file, the project directories, and the Pandoc script path.
+Leave it on unless the file stays on your own machine.
+:::
+
+## Source
+
+The repository ships a short, standalone starting point you can copy: [`example.qmd`](https://github.com/mcanouil/quarto-lua-env/blob/main/example.qmd).

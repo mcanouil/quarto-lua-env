@@ -3,3 +3,5 @@
 *_files/
 /.luarc.json
 lua-env.json
+/.quarto/
+**/*.quarto_ipynb

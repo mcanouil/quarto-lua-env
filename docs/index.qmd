@@ -1,0 +1,72 @@
+---
+title: "Lua Environment"
+subtitle: "The Pandoc and Quarto Lua objects, as document metadata."
+description: "What the lua-env extension is for, how to enable it, and the smallest shortcode that prints a value from the render environment."
+authors:
+  - name: "Mickaël CANOUIL, _Ph.D._"
+    orcid: "0000-0002-3396-4549"
+    url: "https://mickael.canouil.fr"
+---
+
+Quarto and Pandoc keep a good deal of state about a render: which format is being written, which file is being read, which version is running, what the reader and writer options are.
+All of it is reachable from a Lua filter, and none of it from the document you are writing.
+
+`lua-env` copies that state into the document's metadata.
+Once it has run, a value from the render environment can be printed with a shortcode, the same way any other metadata is, and optionally written out as JSON.
+
+## Installation
+
+```bash
+quarto add {{< var extension.reference >}}
+```
+
+This will install the extension under the `_extensions` subdirectory.
+If you are using version control, you will want to check in this directory.
+
+Or install it from your editor with [Quarto Wizard](https://m.canouil.dev/quarto-wizard):
+
+::: {.btn-group role="group" aria-label="Quarto Wizard installer options"}
+
+[Visual Studio Code](vscode://mcanouil.quarto-wizard/install?repo={{< var extension.wizard-reference >}}){.btn .btn-outline-primary title="Install {{< var extension.reference >}} in Visual Studio Code using the Quarto Wizard extension."}
+[Positron](positron://mcanouil.quarto-wizard/install?repo={{< var extension.wizard-reference >}}){.btn .btn-outline-primary title="Install {{< var extension.reference >}} in Positron using the Quarto Wizard extension."}
+[VSCodium](vscodium://mcanouil.quarto-wizard/install?repo={{< var extension.wizard-reference >}}){.btn .btn-outline-primary title="Install {{< var extension.reference >}} in VSCodium using the Quarto Wizard extension."}
+
+:::
+
+## Quick start
+
+The filter has to be enabled before the shortcode has anything to read:
+
+```yaml
+filters:
+  - path: lua-env
+    at: pre-quarto
+```
+
+Then name a value by its dot-separated path:
+
+```markdown
+{{{< lua-env pandoc.FORMAT >}}}
+```
+
+This page renders to {{< lua-env pandoc.FORMAT >}}, under Pandoc {{< lua-env pandoc.PANDOC_VERSION >}}.
+
+The same values are reachable through Quarto's own `meta` shortcode, under the `lua-env` key:
+
+```markdown
+{{{< meta lua-env.pandoc.FORMAT >}}}
+```
+
+See the [Reference](reference.qmd) for every option and every path, and the [Examples](examples.qmd) for values printed live.
+
+## Where it works
+
+Every output format.
+The values differ by format, which is rather the point: `pandoc.FORMAT` is `html` here and `latex` in a PDF.
+
+## Links
+
+- [Reference](reference.qmd) for the full option list.
+- [Examples](examples.qmd) for values from this render.
+- [Changelog](changelog.qmd) for what each release changed.
+- [Source and issues](https://github.com/mcanouil/quarto-lua-env) on GitHub.

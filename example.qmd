@@ -7,140 +7,26 @@ author:
     url: "https://mickael.canouil.fr"
 format:
   html:
-    output-file: index
     toc: true
 filters:
-  - lua-env
+  # pre-quarto, not post-quarto: Quarto expands shortcodes during its own pass,
+  # so a filter placed after it publishes the metadata too late.
+  - path: lua-env
+    at: pre-quarto
 extensions:
   lua-env:
-    json: true
-    json-exclude:
-      - quarto._quarto
-    json-exclude-sensitive: true
-    json-warn-on-server: true
+    json: false
 ---
 
-## Introduction
-
-`lua-env` is an extension for [Quarto](https://quarto.org) to provide access to LUA objects as metadata.
-
-This extension gives you access to the `quarto` object and several Pandoc LUA internal objects using shortcodes.
-
-## Installation
-
-```bash
-quarto add mcanouil/quarto-lua-env@1.5.0
-```
-
-This will install the extension under the `_extensions` subdirectory.
-
-If you're using version control, you will want to check in this directory.
-
-## Usage
-
-Add the following to your YAML header:
-
-- Old (<1.8.21):
-
-  ```yml
-  filters:
-    - quarto
-    - lua-env
-  ```
-
-- New (>=1.8.21):
-
-  ```yml
-  filters:
-    - path: lua-env
-      at: post-quarto
-  ```
-
-This enables access to LUA objects using two shortcode formats:
-
-- `{{< lua-env quarto.doc.input_file >}}` - Direct access via shortcode.
-- `{{< meta lua-env.quarto.doc.input_file >}}` - Access via metadata.
-
-## Available LUA Objects
-
-The following LUA objects are available as metadata:
-
-```yaml
-lua-env:
-  quarto: "quarto"
-  pandoc:
-    PANDOC_STATE: "PANDOC_STATE"
-    FORMAT: "FORMAT"
-    PANDOC_READER_OPTIONS: "PANDOC_READER_OPTIONS"
-    PANDOC_WRITER_OPTIONS: "PANDOC_WRITER_OPTIONS"
-    PANDOC_VERSION: "PANDOC_VERSION"
-    PANDOC_API_VERSION: "PANDOC_API_VERSION"
-    PANDOC_SCRIPT_FILE: "PANDOC_SCRIPT_FILE"
-```
-
-See [Pandoc LUA API - Global Variables](https://pandoc.org/lua-filters.html#global-variables) for more information about Pandoc global variables.
-
-## Shortcodes
-
-### Quarto
-
-:::: {layout-ncol="2"}
-
-:::: {}
-
-```markdown
-{{{< lua-env quarto.doc.input_file >}}}
-```
-
-{{< lua-env quarto.doc.input_file >}}
-
-:::
-
-:::: {}
-
-```markdown
-{{{< meta lua-env.quarto.doc.input_file >}}}
-```
-
-{{< meta lua-env.quarto.doc.input_file >}}
-
-:::
-:::
-
-### Pandoc
-
-:::: {layout-ncol="2"}
-:::: {}
-
-```markdown
-{{{< lua-env pandoc.PANDOC_VERSION >}}}
-```
-
-{{< lua-env pandoc.PANDOC_VERSION >}}
-
-:::
-:::: {}
-
-```markdown
-{{{< meta lua-env.pandoc.PANDOC_VERSION >}}}
-```
-
-{{< meta lua-env.pandoc.PANDOC_VERSION >}}
-
-:::
-:::
-
-:::: {layout-ncol="2"}
-:::: {}
+The filter collects the live Pandoc and Quarto Lua objects into metadata, and the shortcode prints any of them by a dot-separated path.
 
 ```markdown
 {{{< lua-env pandoc.FORMAT >}}}
 ```
 
-{{< lua-env pandoc.FORMAT >}}
+This document renders to {{< lua-env pandoc.FORMAT >}}, under Pandoc {{< lua-env pandoc.PANDOC_VERSION >}} and Quarto {{< lua-env quarto.version >}}.
 
-:::
-:::: {}
+The same values are reachable as ordinary metadata, under the `lua-env` key:
 
 ```markdown
 {{{< meta lua-env.pandoc.FORMAT >}}}
@@ -148,89 +34,6 @@ See [Pandoc LUA API - Global Variables](https://pandoc.org/lua-filters.html#glob
 
 {{< meta lua-env.pandoc.FORMAT >}}
 
-:::
-:::
+Set `json: true` to write the whole tree to `lua-env.json` beside the output.
 
-## JSON Export
-
-This document is configured to export the `lua-env` metadata to a JSON file, with the `quarto._quarto` branch removed and sensitive filesystem paths redacted.
-
-```yaml
-extensions:
-  lua-env:
-    json: true
-    json-exclude:
-      - quarto._quarto
-    json-exclude-sensitive: true
-    json-warn-on-server: true
-```
-
-By default, no JSON file is written (`json: false`).
-To enable JSON export, set `json: true` (writes to `lua-env.json`) or provide a custom file path.
-
-### JSON export schema
-
-The exported JSON is an object with two top-level keys, `pandoc` and `quarto`.
-
-```json
-{
-  "pandoc": {
-    "FORMAT": "html",
-    "PANDOC_API_VERSION": "1.23",
-    "PANDOC_VERSION": "3.6.3",
-    "PANDOC_READER_OPTIONS": { },
-    "PANDOC_WRITER_OPTIONS": { },
-    "PANDOC_STATE": { }
-  },
-  "quarto": {
-    "version": [1, 7, 32],
-    "doc": { },
-    "project": { },
-    "log": { },
-    "json": { }
-  }
-}
-```
-
-Container shapes mirror the live Pandoc/Quarto objects.
-Functions and userdata are dropped.
-Empty branches are omitted.
-
-### Filtering options
-
-- `json-include`: array of dot-separated paths to keep (e.g. `pandoc.FORMAT`).
-  Everything outside the listed paths is omitted.
-- `json-exclude`: array of dot-separated paths to drop, applied after the include whitelist.
-- `json-exclude-sensitive` (default `true`): redacts built-in sensitive paths that expose host filesystem layout, namely `quarto.doc.input_file`, `quarto.doc.output_file`, `quarto.project.directory`, `quarto.project.output_directory`, and `pandoc.PANDOC_SCRIPT_FILE`.
-  Set to `false` to include them.
-- `json-warn-on-server` (default `true`): emits a warning when JSON export is enabled in a CI or server context (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `TRAVIS`, `JENKINS_URL`, `BUILDKITE`, `TF_BUILD`).
-  Set to `false` to silence.
-
-For example, to export only the active Pandoc format and Quarto version:
-
-```yaml
-extensions:
-  lua-env:
-    json: true
-    json-include:
-      - pandoc.FORMAT
-      - quarto.version
-```
-
-To remove a noisy branch while keeping everything else:
-
-```yaml
-extensions:
-  lua-env:
-    json: true
-    json-exclude:
-      - quarto._quarto
-```
-
-To use a custom output filename:
-
-```yaml
-extensions:
-  lua-env:
-    json: "custom-output.json"
-```
+Full documentation: <https://m.canouil.dev/quarto-lua-env/>.
