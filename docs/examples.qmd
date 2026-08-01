@@ -9,8 +9,7 @@ The filter is enabled in this site's `_quarto.yml`:
 
 ```yaml
 filters:
-  - path: lua-env
-    at: pre-quarto
+  - lua-env
 ```
 
 ## Pandoc

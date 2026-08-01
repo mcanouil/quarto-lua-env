@@ -10,23 +10,10 @@ The shortcode reads metadata the filter collects, so the filter has to run first
 
 ```yaml
 filters:
-  - path: lua-env
-    at: pre-quarto
-```
-
-::: {.callout-caution}
-`at: pre-quarto`, not `at: post-quarto`.
-Quarto expands shortcodes during its own pass, so a filter placed after that pass publishes the metadata too late.
-Every `{{{< lua-env >}}}` then warns that no `lua-env` metadata was found and renders nothing, while the document itself builds as though nothing were wrong.
-:::
-
-Ordering the filter by hand has the same effect, and is what a project already listing `quarto` among its filters will be doing:
-
-```yaml
-filters:
-  - quarto
   - lua-env
 ```
+
+The extension registers the filter at `pre-quarto`, before Quarto expands shortcodes, so the entry point never has to be named here.
 
 ## Shortcode
 
