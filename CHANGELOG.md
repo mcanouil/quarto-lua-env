@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.5.2 (2026-08-01)
+
 ### Bug Fixes
 
 - fix: Register the filter at `pre-quarto` in the extension manifest, so listing `lua-env` under `filters` is enough. The shortcode reads metadata the filter publishes, and a filter left at the default entry point published it after Quarto had expanded the shortcodes, so every `{{< lua-env >}}` rendered as nothing unless the entry point was named by hand.

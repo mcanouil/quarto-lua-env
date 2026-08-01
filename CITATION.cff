@@ -10,4 +10,4 @@ repository-code: "https://github.com/mcanouil/quarto-lua-env"
 url: "http://m.canouil.dev/quarto-lua-env/"
 license: "MIT"
 date-released: "2026-08-01"
-version: 1.5.1
+version: 1.5.2
