@@ -9,10 +9,7 @@ format:
   html:
     toc: true
 filters:
-  # pre-quarto, not post-quarto: Quarto expands shortcodes during its own pass,
-  # so a filter placed after it publishes the metadata too late.
-  - path: lua-env
-    at: pre-quarto
+  - lua-env
 extensions:
   lua-env:
     json: false

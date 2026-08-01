@@ -39,8 +39,7 @@ The filter has to be enabled before the shortcode has anything to read:
 
 ```yaml
 filters:
-  - path: lua-env
-    at: pre-quarto
+  - lua-env
 ```
 
 Then name a value by its dot-separated path:
