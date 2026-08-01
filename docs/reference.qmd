@@ -1,0 +1,135 @@
+---
+title: "Reference"
+subtitle: "Every option the lua-env extension accepts."
+description: "The complete lua-env configuration: enabling the filter, the shortcode, the metadata tree it publishes, and the JSON export with its filters."
+---
+
+## Enabling the filter
+
+The shortcode reads metadata the filter collects, so the filter has to run first.
+
+```yaml
+filters:
+  - path: lua-env
+    at: pre-quarto
+```
+
+::: {.callout-caution}
+`at: pre-quarto`, not `at: post-quarto`.
+Quarto expands shortcodes during its own pass, so a filter placed after that pass publishes the metadata too late.
+Every `{{{< lua-env >}}}` then warns that no `lua-env` metadata was found and renders nothing, while the document itself builds as though nothing were wrong.
+:::
+
+Ordering the filter by hand has the same effect, and is what a project already listing `quarto` among its filters will be doing:
+
+```yaml
+filters:
+  - quarto
+  - lua-env
+```
+
+## Shortcode
+
+```markdown
+{{{< lua-env <path> >}}}
+```
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `path` | string | Yes | A dot-separated path into the collected metadata, such as `quarto.version` or `pandoc.FORMAT`. |
+
+: The argument of the `lua-env` shortcode. {.striped .hover tbl-colwidths="[15,13,12,60]"}
+
+Everything the extension collects also sits under the `lua-env` metadata key, so Quarto's own shortcode reaches the same values:
+
+```markdown
+{{{< meta lua-env.quarto.version >}}}
+```
+
+## What is published
+
+Two branches, mirroring the live Lua objects.
+
+| Branch | Contents |
+| --- | --- |
+| `pandoc` | `FORMAT`, `PANDOC_VERSION`, `PANDOC_API_VERSION`, `PANDOC_STATE`, `PANDOC_READER_OPTIONS`, `PANDOC_WRITER_OPTIONS`, `PANDOC_SCRIPT_FILE`. |
+| `quarto` | `version`, `doc`, `project`, `log`, `json`, and the rest of the `quarto` table. |
+
+: The metadata tree. {.striped .hover tbl-colwidths="[18,82]"}
+
+The Pandoc names are documented under [Global Variables](https://pandoc.org/lua-filters.html#global-variables) in the Pandoc manual.
+
+Functions and userdata cannot be represented as metadata and are dropped.
+Branches left empty by that are pruned.
+
+## JSON export
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `json` | boolean or string | `false` | `true` writes `lua-env.json`; a string writes that path; `false` writes nothing. |
+| `json-include` | string or array | | Dot-separated paths to keep. Anything outside them is omitted. Omit the option to keep everything. |
+| `json-exclude` | string or array | | Dot-separated paths to drop, applied after `json-include`. |
+| `json-exclude-sensitive` | boolean | `true` | Drops the paths listed below, leaving nothing in their place. |
+| `json-warn-on-server` | boolean | `true` | Warns when the export runs in a CI or server context. |
+
+: JSON export options. {.striped .hover tbl-colwidths="[24,16,10,50]"}
+
+A relative `json` path is resolved against the directory of the document being rendered, not the project root and not the output directory.
+`json: true` therefore drops `lua-env.json` next to the source file, where it is a build artefact to ignore rather than something the site publishes.
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-include:
+      - pandoc.FORMAT
+      - quarto.version
+```
+
+`json` accepts a real YAML boolean, its quoted string form, or a path.
+
+### Redacted paths
+
+With `json-exclude-sensitive` left at `true`, these are removed because they describe the machine that ran the render rather than the document:
+
+- `quarto.doc.input_file`
+- `quarto.doc.output_file`
+- `quarto.project.directory`
+- `quarto.project.output_directory`
+- `pandoc.PANDOC_SCRIPT_FILE`
+
+::: {.callout-warning}
+Turning that off writes absolute paths from the build machine into a file, and a published site will serve it.
+The warning under `json-warn-on-server` exists for the same reason: an export that is useful on a laptop is usually a leak in CI.
+:::
+
+`json-warn-on-server` triggers on any of `CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `CIRCLECI`, `TRAVIS`, `JENKINS_URL`, `BUILDKITE`, and `TF_BUILD`.
+
+### Shape of the file
+
+```json
+{
+  "pandoc": {
+    "FORMAT": "html",
+    "PANDOC_API_VERSION": "1.23",
+    "PANDOC_VERSION": "3.6.3",
+    "PANDOC_READER_OPTIONS": { },
+    "PANDOC_WRITER_OPTIONS": { },
+    "PANDOC_STATE": { }
+  },
+  "quarto": {
+    "version": [1, 7, 32],
+    "doc": { },
+    "project": { },
+    "log": { },
+    "json": { },
+    "_quarto": { }
+  }
+}
+```
+
+## Limitations
+
+- The filter must be enabled explicitly; installing the extension is not enough.
+- Values are collected as the filter runs, so a shortcode reads the state at that point rather than at the end of the render.
+- Anything that is a function or userdata in Lua has no metadata equivalent and does not appear.

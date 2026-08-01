@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Documentation
+
+- docs: Add a documentation website under `docs/`, built on the `atelier` project type and published to <https://m.canouil.dev/quarto-lua-env/>.
+- docs: Correct the filter placement. The shortcode needs `at: pre-quarto`; `at: post-quarto`, which the README recommended, publishes the metadata after Quarto has expanded shortcodes, so every `{{< lua-env >}}` rendered as nothing.
+- docs: Trim `README.md` to a landing page pointing at the website, and `example.qmd` to a short starting point to copy.
+- docs: Add the Pages workflow, which renders `docs/` on pull requests and deploys it from the release tag.
+- docs: Add the Quarto Extensions Updates workflow, scanning `docs` for the website's own dependencies.
+
 ## 1.5.0 (2026-05-31)
 
 ### New Features
