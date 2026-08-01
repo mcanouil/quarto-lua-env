@@ -16,10 +16,11 @@ filters:
 
 ::: {.callout-caution}
 `at: pre-quarto`, not `at: post-quarto`.
-Quarto expands shortcodes during its own pass, so a filter placed after that pass publishes the metadata too late: every `{{< lua-env >}}` renders as nothing, without a warning.
+Quarto expands shortcodes during its own pass, so a filter placed after that pass publishes the metadata too late.
+Every `{{{< lua-env >}}}` then warns that no `lua-env` metadata was found and renders nothing, while the document itself builds as though nothing were wrong.
 :::
 
-On Quarto older than 1.8.21 the positioning syntax did not exist, and the filter was ordered by hand instead, which has the same effect:
+Ordering the filter by hand has the same effect, and is what a project already listing `quarto` among its filters will be doing:
 
 ```yaml
 filters:
@@ -68,10 +69,13 @@ Branches left empty by that are pruned.
 | `json` | boolean or string | `false` | `true` writes `lua-env.json`; a string writes that path; `false` writes nothing. |
 | `json-include` | string or array | | Dot-separated paths to keep. Anything outside them is omitted. Omit the option to keep everything. |
 | `json-exclude` | string or array | | Dot-separated paths to drop, applied after `json-include`. |
-| `json-exclude-sensitive` | boolean | `true` | Redacts the paths listed below. |
+| `json-exclude-sensitive` | boolean | `true` | Drops the paths listed below, leaving nothing in their place. |
 | `json-warn-on-server` | boolean | `true` | Warns when the export runs in a CI or server context. |
 
 : JSON export options. {.striped .hover tbl-colwidths="[24,16,10,50]"}
+
+A relative `json` path is resolved against the directory of the document being rendered, not the project root and not the output directory.
+`json: true` therefore drops `lua-env.json` next to the source file, where it is a build artefact to ignore rather than something the site publishes.
 
 ```yaml
 extensions:
@@ -118,7 +122,8 @@ The warning under `json-warn-on-server` exists for the same reason: an export th
     "doc": { },
     "project": { },
     "log": { },
-    "json": { }
+    "json": { },
+    "_quarto": { }
   }
 }
 ```

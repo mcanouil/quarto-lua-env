@@ -58,7 +58,7 @@ extensions:
     json: false
 ```
 
-Turning it on writes `lua-env.json` beside the output:
+Turning it on writes `lua-env.json` beside the source document, so add it to `.gitignore`:
 
 ```yaml
 extensions:
@@ -88,7 +88,7 @@ extensions:
 ```
 
 ::: {.callout-warning}
-`json-exclude-sensitive` defaults to `true` and redacts the input file, the output file, the project directories, and the Pandoc script path.
+`json-exclude-sensitive` defaults to `true` and drops the input file, the output file, the project directories, and the Pandoc script path.
 Leave it on unless the file stays on your own machine.
 :::
 
