@@ -88,10 +88,8 @@ format:
         - assets/theme.scss
 
 filters:
-  - at: pre-quarto
-    path: code-window
-  - at: post-quarto
-    path: gitlink
+  - code-window
+  - gitlink
   # pre-quarto, not post-quarto: Quarto expands shortcodes during its own pass,
   # so a filter placed after it publishes the metadata too late and every
   # {{< lua-env >}} renders empty.
