@@ -1,4 +1,4 @@
---- @module lua-env-shortcode
+--- @module "lua-env-shortcode"
 --- @license MIT
 --- @copyright 2026 Mickaël Canouil
 --- @author Mickaël Canouil

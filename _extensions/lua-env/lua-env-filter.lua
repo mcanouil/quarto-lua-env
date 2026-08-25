@@ -1,4 +1,4 @@
---- @module lua-env-filter
+--- @module "lua-env-filter"
 --- @license MIT
 --- @copyright 2026 Mickaël Canouil
 --- @author Mickaël Canouil
