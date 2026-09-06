@@ -7,9 +7,9 @@
 local EXTENSION_NAME = 'lua-env'
 
 --- Load modules
-local str = require(quarto.utils.resolve_path('_modules/string.lua'):gsub('%.lua$', ''))
-local log = require(quarto.utils.resolve_path('_modules/logging.lua'):gsub('%.lua$', ''))
-local pdoc = require(quarto.utils.resolve_path('_modules/pandoc-helpers.lua'):gsub('%.lua$', ''))
+local str = require(quarto.utils.resolve_path('_vendor/quarto-lua-modules/string.lua'):gsub('%.lua$', ''))
+local log = require(quarto.utils.resolve_path('_vendor/quarto-lua-modules/logging.lua'):gsub('%.lua$', ''))
+local pdoc = require(quarto.utils.resolve_path('_vendor/quarto-lua-modules/pandoc-helpers.lua'):gsub('%.lua$', ''))
 
 return {
   ['lua-env'] = function(args, kwargs, meta)
