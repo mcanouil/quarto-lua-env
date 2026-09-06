@@ -10,6 +10,24 @@ local EXTENSION_NAME = 'lua-env'
 local str = require(quarto.utils.resolve_path('_vendor/quarto-lua-modules/string.lua'):gsub('%.lua$', ''))
 local log = require(quarto.utils.resolve_path('_vendor/quarto-lua-modules/logging.lua'):gsub('%.lua$', ''))
 local pdoc = require(quarto.utils.resolve_path('_vendor/quarto-lua-modules/pandoc-helpers.lua'):gsub('%.lua$', ''))
+local schema = require(quarto.utils.resolve_path('_vendor/quarto-wizard/schema.lua'):gsub('%.lua$', ''))
+local check = require(quarto.utils.resolve_path('_vendor/quarto-lua-modules/schema-check.lua'):gsub('%.lua$', ''))
+
+--- The schema check, built once and reused by the whole render. It reads
+--- `_schema.yml` on the way in and checks the document configuration once.
+---
+--- The validator is injected rather than required by the check module, so the
+--- two vendored sources stay independent of where the other was placed.
+---
+--- The extension contributes both a filter and a shortcode, in two files, so
+--- the check is split across them. The configuration check runs from the first
+--- `Meta` pass of this filter, because the filter always runs, it is handed the
+--- metadata, and it runs before Quarto expands the shortcodes. The shortcode
+--- file checks the calls.
+---
+--- A schema that cannot be read is reported by the module as an error and the
+--- render carries on: a configuration file must not stop a document.
+local checker = check.new(schema, EXTENSION_NAME)
 
 --- @type string|nil The JSON file path to export metadata to
 local json_file = nil
@@ -197,6 +215,8 @@ end
 --- @param meta table The document metadata table
 --- @return table The metadata table
 local function get_configuration(meta)
+  checker:options(meta)
+
   -- Reset module-level state per document to avoid cross-document leakage in batch renders.
   json_file = nil
   include_paths = nil
