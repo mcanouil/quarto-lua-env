@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Bug Fixes
+
+- fix: Read `json-exclude-sensitive` and `json-warn-on-server` through the schema, so `no` turns each off. Reading the document text accepted `true` and `false` only, and every other spelling fell back to the default. (#41)
+
 ### Documentation
 
 - docs: Serve the extension's social card as the Open Graph image, so a shared link shows the card rather than the first image on the page. (#38)
@@ -10,6 +14,7 @@
 
 - build: Update the vendored Lua modules to 2.3.0, which includes the `schema-check` fix for an extension whose entry points are in a subdirectory. A module no longer carries a version line in its header, so its checksum changes only when its code changes. (#39)
 - build: Fetch the schema validator from a Quarto Wizard release asset rather than a raw path inside its repository, which a refactor could move without notice. The vendored file is unchanged. (#40)
+- build: Update the vendored Lua modules to 2.5.0, which adds the accessor that reads what the schema resolves an option to. The schema validator moves to 3.6.3, whose vendored file is unchanged. (#41)
 
 ## 1.6.0 (2026-09-07)
 
