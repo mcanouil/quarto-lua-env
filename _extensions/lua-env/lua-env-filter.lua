@@ -54,35 +54,6 @@ local SENSITIVE_PATHS = {
   ['pandoc.PANDOC_SCRIPT_FILE'] = true,
 }
 
---- Coerce a metadata value to a Lua boolean if it represents one, otherwise return nil.
---- Handles raw Lua booleans, Pandoc MetaBool (via `pandoc.utils.type`), and the strings
---- `'true'`/`'false'` (case-insensitive). Any other value yields nil so callers can
---- treat it as a non-boolean (for example a file path string).
---- @param value any The metadata value to coerce
---- @return boolean|nil The coerced boolean, or nil if value is not boolean-like
-local function coerce_boolean(value)
-  if value == nil then return nil end
-  if type(value) == 'boolean' then return value end
-  if pandoc.utils.type(value) == 'boolean' then return value end
-  local s = pandoc.utils.stringify(value)
-  if s == nil or s == '' then return nil end
-  local lower = s:lower()
-  if lower == 'true' then return true end
-  if lower == 'false' then return false end
-  return nil
-end
-
---- Read a raw metadata value at extensions.{extension_name}.{key} without stringifying.
---- @param meta table The document metadata table
---- @param extension_name string The extension namespace key
---- @param key string The configuration key
---- @return any The raw metadata value, or nil if missing
-local function get_raw_meta(meta, extension_name, key)
-  if not meta['extensions'] then return nil end
-  if not meta['extensions'][extension_name] then return nil end
-  return meta['extensions'][extension_name][key]
-end
-
 --- Parse a list-style metadata value into a set of strings.
 --- Accepts a MetaList of strings or a single scalar string.
 --- @param value any The raw metadata value
@@ -224,29 +195,30 @@ local function get_configuration(meta)
   exclude_sensitive = true
   warn_on_server = true
 
-  local raw_json = get_raw_meta(meta, 'lua-env', 'json')
-  local json_bool = coerce_boolean(raw_json)
-  if json_bool == true then
+  -- The schema decides each value, so the two forms of `json` are told apart by
+  -- type rather than by parsing the text again.
+  --
+  -- One ambiguity survives, and it is the schema's rather than this code's.
+  -- `json` is declared `type: [boolean, string]`, and the validator returns a
+  -- value that already matches a declared type untouched. `yes` and `no` are
+  -- strings, so they stay strings and name a file, and `json: no` writes a file
+  -- called `no` instead of disabling the export. Quoting is the only way to say
+  -- which is meant, and no reader of a schema would guess that.
+  local json_value = checker:option('json')
+  if json_value == true then
     json_file = 'lua-env.json'
-  elseif json_bool == false then
-    json_file = nil
-  elseif raw_json ~= nil then
-    local s = pandoc.utils.stringify(raw_json)
-    if s ~= '' then
-      json_file = s
-    end
+  elseif type(json_value) == 'string' and json_value ~= '' then
+    json_file = json_value
   end
 
-  include_paths = parse_path_list(get_raw_meta(meta, 'lua-env', 'json-include'))
-  exclude_paths = parse_path_list(get_raw_meta(meta, 'lua-env', 'json-exclude'))
+  include_paths = parse_path_list(checker:option('json-include'))
+  exclude_paths = parse_path_list(checker:option('json-exclude'))
 
-  local raw_sensitive = get_raw_meta(meta, 'lua-env', 'json-exclude-sensitive')
-  local sensitive_bool = coerce_boolean(raw_sensitive)
-  if sensitive_bool ~= nil then exclude_sensitive = sensitive_bool end
+  local sensitive = checker:option('json-exclude-sensitive')
+  if type(sensitive) == 'boolean' then exclude_sensitive = sensitive end
 
-  local raw_warn = get_raw_meta(meta, 'lua-env', 'json-warn-on-server')
-  local warn_bool = coerce_boolean(raw_warn)
-  if warn_bool ~= nil then warn_on_server = warn_bool end
+  local warn = checker:option('json-warn-on-server')
+  if type(warn) == 'boolean' then warn_on_server = warn end
 
   return meta
 end
