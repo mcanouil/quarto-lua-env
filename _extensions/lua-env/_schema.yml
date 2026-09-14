@@ -15,9 +15,13 @@ $schema: https://m.canouil.dev/quarto-wizard/assets/schema/v2/extension-schema.j
 
 options:
   json:
-    type: [boolean, string]
+    type: boolean
     default: false
-    description: "Export the Lua environment metadata to a JSON file, using true for 'lua-env.json', false to disable, or a custom file path."
+    description: "Export the Lua environment metadata to a JSON file. The file is named by 'json-file'."
+  json-file:
+    type: string
+    default: "lua-env.json"
+    description: "Path of the JSON export, relative to the document. Read only when 'json' is true."
   json-include:
     type: [string, array]
     default: null

@@ -31,6 +31,6 @@ The same values are reachable as ordinary metadata, under the `lua-env` key:
 
 {{< meta lua-env.pandoc.FORMAT >}}
 
-Set `json: true` to write the whole tree to `lua-env.json` beside the output.
+Set `json: true` to write the whole tree to `lua-env.json` beside the output, or name another file with `json-file`.
 
 Full documentation: <https://m.canouil.dev/quarto-lua-env/>.

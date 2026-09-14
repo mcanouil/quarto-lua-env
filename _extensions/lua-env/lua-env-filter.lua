@@ -195,20 +195,13 @@ local function get_configuration(meta)
   exclude_sensitive = true
   warn_on_server = true
 
-  -- The schema decides each value, so the two forms of `json` are told apart by
-  -- type rather than by parsing the text again.
-  --
-  -- One ambiguity survives, and it is the schema's rather than this code's.
-  -- `json` is declared `type: [boolean, string]`, and the validator returns a
-  -- value that already matches a declared type untouched. `yes` and `no` are
-  -- strings, so they stay strings and name a file, and `json: no` writes a file
-  -- called `no` instead of disabling the export. Quoting is the only way to say
-  -- which is meant, and no reader of a schema would guess that.
-  local json_value = checker:option('json')
-  if json_value == true then
-    json_file = 'lua-env.json'
-  elseif type(json_value) == 'string' and json_value ~= '' then
-    json_file = json_value
+  -- Whether to export and where to export are two questions, so they are two
+  -- options. `json` was once a boolean or a path in one declaration, which made
+  -- `json: no` write a file called `no`: a string is a declared type, so the
+  -- validator returned it untouched and this code read it as a file name.
+  if checker:option('json') == true then
+    local path = checker:option('json-file')
+    json_file = (type(path) == 'string' and path ~= '') and path or 'lua-env.json'
   end
 
   include_paths = parse_path_list(checker:option('json-include'))
