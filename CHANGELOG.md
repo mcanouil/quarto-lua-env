@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### New Features
+
+- feat: Split `json` into a boolean and a `json-file` path. They were one option accepting either, so `json: no` wrote a file called `no` rather than disabling the export. A document passing a path to `json` must be updated. (#41)
+
 ### Bug Fixes
 
 - fix: Read `json-exclude-sensitive` and `json-warn-on-server` through the schema, so a value that is not a boolean is reported rather than falling back to the default in silence. Reading the document text accepted `true` and `false` only. (#41)
