@@ -4,7 +4,7 @@
 
 ### Bug Fixes
 
-- fix: Read `json-exclude-sensitive` and `json-warn-on-server` through the schema, so `no` turns each off. Reading the document text accepted `true` and `false` only, and every other spelling fell back to the default. (#41)
+- fix: Read `json-exclude-sensitive` and `json-warn-on-server` through the schema, so a value that is not a boolean is reported rather than falling back to the default in silence. Reading the document text accepted `true` and `false` only. (#41)
 
 ### Documentation
 
