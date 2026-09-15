@@ -53,7 +53,8 @@ Branches left empty by that are pruned.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `json` | boolean or string | `false` | `true` writes `lua-env.json`; a string writes that path; `false` writes nothing. |
+| `json` | boolean | `false` | `true` writes the export, `false` writes nothing. |
+| `json-file` | string | `lua-env.json` | Path of the export, read only when `json` is `true`. |
 | `json-include` | string or array | | Dot-separated paths to keep. Anything outside them is omitted. Omit the option to keep everything. |
 | `json-exclude` | string or array | | Dot-separated paths to drop, applied after `json-include`. |
 | `json-exclude-sensitive` | boolean | `true` | Drops the paths listed below, leaving nothing in their place. |
@@ -61,7 +62,7 @@ Branches left empty by that are pruned.
 
 : JSON export options. {.striped .hover tbl-colwidths="[24,16,10,50]"}
 
-A relative `json` path is resolved against the directory of the document being rendered, not the project root and not the output directory.
+A relative `json-file` path is resolved against the directory of the document being rendered, not the project root and not the output directory.
 `json: true` therefore drops `lua-env.json` next to the source file, where it is a build artefact to ignore rather than something the site publishes.
 
 ```yaml
@@ -73,7 +74,7 @@ extensions:
       - quarto.version
 ```
 
-`json` accepts a real YAML boolean, its quoted string form, or a path.
+`json` is a boolean, and `json-file` names the file. They were one option once, which meant `json: no` wrote a file called `no` rather than disabling the export.
 
 ### Redacted paths
 
