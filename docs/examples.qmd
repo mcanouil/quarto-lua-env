@@ -4,7 +4,7 @@ subtitle: "Values from this very render."
 description: "The lua-env shortcode printing the Pandoc and Quarto state of the render that produced this page."
 ---
 
-Every value below was read out of the render that produced this page.
+Every value in the tables below was read out of the render that produced this page.
 The filter is enabled in this site's `_quarto.yml`:
 
 ```yaml
@@ -32,6 +32,35 @@ Render the same document to another format and `pandoc.FORMAT` changes with it.
 
 : The Quarto version that built this page. {.striped .hover tbl-colwidths="[55,45]"}
 
+## Deeper paths
+
+The argument is one dot-separated path, and it reaches as far down the tree as you need.
+A key that holds a hyphen needs no quoting, because the path is split on the full stop alone.
+
+| Source | Value |
+| --- | --- |
+| `{{{< lua-env pandoc.PANDOC_WRITER_OPTIONS.wrap_text >}}}` | {{< lua-env pandoc.PANDOC_WRITER_OPTIONS.wrap_text >}} |
+| `{{{< lua-env pandoc.PANDOC_WRITER_OPTIONS.html_math_method.method >}}}` | {{< lua-env pandoc.PANDOC_WRITER_OPTIONS.html_math_method.method >}} |
+| `{{{< lua-env quarto.doc.language.back-to-top >}}}` | {{< lua-env quarto.doc.language.back-to-top >}} |
+| `{{{< lua-env quarto.project.offset >}}}` | {{< lua-env quarto.project.offset >}} |
+
+: Deeper paths, as this page was rendered. {.striped .hover tbl-colwidths="[70,30]"}
+
+The first two rows are options Quarto hands to Pandoc for this format.
+The third is one of Quarto's own interface strings, in the language the document declares.
+The fourth is the path from this page back to the root of the project, so a page in a subdirectory prints something else.
+
+::: {.callout-note}
+Some of what the extension reports describes the machine that ran the render.
+`quarto.version`, `pandoc.PANDOC_VERSION` and `pandoc.PANDOC_API_VERSION` are the versions installed there, so a local preview and the published build print different numbers.
+`pandoc.FORMAT` and the interface strings follow the document instead, and stay the same wherever it is rendered.
+:::
+
+::: {.callout-important}
+`quarto.version` is the only list the shortcode joins, and it joins it with full stops.
+Every other list prints its items one after another with nothing between them, so `{{{< lua-env pandoc.PANDOC_WRITER_OPTIONS.extensions >}}}` gives {{< lua-env pandoc.PANDOC_WRITER_OPTIONS.extensions >}} here.
+:::
+
 ## Through the `meta` shortcode
 
 Everything sits under the `lua-env` metadata key as well, so Quarto's own shortcode reaches it without the extension's own:
@@ -46,6 +75,38 @@ Everything sits under the `lua-env` metadata key as well, so Quarto's own shortc
 The two shortcodes are not interchangeable.
 `meta` prints scalars, and reports `?invalid meta type` for anything else, so a path such as `lua-env.quarto.version`, which is a list of three numbers, needs the extension's own shortcode.
 :::
+
+## When a path does not resolve
+
+None of the calls in this section run on this page, because each one writes a message the build would report.
+
+A call with no argument gives two messages and renders nothing:
+
+```markdown
+{{{< lua-env >}}}
+```
+
+```text
+(E) [lua-env] The "lua-env" shortcode needs its "variable" argument.
+(W) [lua-env] No variable name provided.
+```
+
+A path whose last part is absent gives one warning and renders nothing:
+
+```markdown
+{{{< lua-env pandoc.NOPE >}}}
+```
+
+```text
+(W) [lua-env] Variable 'pandoc.NOPE' not found in lua-env metadata.
+```
+
+Two other shapes stop the render instead of reporting it:
+
+- A path whose middle part is absent, such as `pandoc.NOPE.name`, fails with `attempt to index a nil value`.
+- A path that names a branch rather than a value, such as `pandoc.PANDOC_WRITER_OPTIONS`, fails with `Inline expected, got table`.
+
+Read a path off the tree in [What is published](reference.qmd#what-is-published) before you use it.
 
 ## Exporting to JSON
 
@@ -86,10 +147,104 @@ extensions:
       - quarto._quarto
 ```
 
+You can use both at once.
+The exclusion wins, so it drops a branch from inside what the inclusion kept:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-include: pandoc.PANDOC_WRITER_OPTIONS
+    json-exclude: pandoc.PANDOC_WRITER_OPTIONS.extensions
+```
+
+Either option also takes a single path, as above, rather than a list.
+
 ::: {.callout-warning}
 `json-exclude-sensitive` defaults to `true` and drops the input file, the output file, the project directories, and the Pandoc script path.
 Leave it on unless the file stays on your own machine.
 :::
+
+### Naming the export file
+
+`json-file` names the file, and the extension reads it only when `json` is `true`:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-file: "_build/lua-env.json"
+```
+
+The path is resolved against the directory of the source document.
+A document in `posts/first/` therefore writes `posts/first/_build/lua-env.json`, whatever the project root and the output directory are.
+
+The extension writes the file but does not create the directory above it.
+A directory that is absent is reported, and the render carries on without an export:
+
+```text
+(E) [lua-env] Failed to write JSON file: _build/lua-env.json: No such file or directory
+```
+
+An empty `json-file` falls back to `lua-env.json`.
+
+### What the redaction leaves behind
+
+A redacted path is removed with everything under it.
+`quarto.project` is not itself a redacted path, but two of its three entries are:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-include: quarto.project
+```
+
+For a document at the root of its project, that writes:
+
+```json
+{
+  "quarto": {
+    "project": {
+      "offset": "."
+    }
+  }
+}
+```
+
+Set the option to `false` to keep the two that were dropped:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-exclude-sensitive: false
+```
+
+[Redacted paths](reference.qmd#redacted-paths) lists everything the option removes.
+
+### Exporting from a build server
+
+`json-warn-on-server` is `true` unless you set it.
+With the export on, and one of the continuous integration variables set, the filter warns once and still writes the file:
+
+```text
+(W) [lua-env] JSON export is enabled in a server/CI context (CI is set). The exported file may leak host filesystem paths. Set extensions.lua-env.json-warn-on-server: false to silence this warning.
+```
+
+Silence the warning once you have decided the export is safe there:
+
+```yaml
+extensions:
+  lua-env:
+    json: true
+    json-warn-on-server: false
+```
+
+A variable that is empty, or set to the text `false`, does not count as a build server.
+The check belongs to the export alone.
+With `json: false` the extension writes no file and reports no warning, whatever the environment holds.
+[JSON export](reference.qmd#json-export) names the variables the check looks at.
 
 ## Source
 
