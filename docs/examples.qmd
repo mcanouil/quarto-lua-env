@@ -191,7 +191,8 @@ An empty `json-file` falls back to `lua-env.json`.
 ### What the redaction leaves behind
 
 A redacted path is removed with everything under it.
-`quarto.project` is not itself a redacted path, but two of its three entries are:
+`quarto.project` is not itself a redacted path, but two of its four entries are, `directory` and `output_directory`.
+The fourth, `profile`, is an empty list when no Quarto profile is active, and an empty list is pruned:
 
 ```yaml
 extensions:
@@ -200,13 +201,26 @@ extensions:
     json-include: quarto.project
 ```
 
-For a document at the root of its project, that writes:
+For a document at the root of its project, with no profile active, that writes:
 
 ```json
 {
   "quarto": {
     "project": {
       "offset": "."
+    }
+  }
+}
+```
+
+Run the same document under a profile and the branch carries it as well, since `quarto.project.profile` is not redacted:
+
+```json
+{
+  "quarto": {
+    "project": {
+      "offset": ".",
+      "profile": ["demo"]
     }
   }
 }
