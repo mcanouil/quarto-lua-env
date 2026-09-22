@@ -190,6 +190,9 @@ An empty `json-file` falls back to `lua-env.json`.
 
 ### What the redaction leaves behind
 
+The JSON on this page is laid out for reading.
+The file itself is one line, as the [Reference](reference.qmd#shape-of-the-file) says.
+
 A redacted path is removed with everything under it.
 `quarto.project` is not itself a redacted path, but two of its four entries are, `directory` and `output_directory`.
 The fourth, `profile`, is an empty list when no Quarto profile is active, and an empty list is pruned:
@@ -232,6 +235,7 @@ Set the option to `false` to keep the two that were dropped:
 extensions:
   lua-env:
     json: true
+    json-include: quarto.project
     json-exclude-sensitive: false
 ```
 
