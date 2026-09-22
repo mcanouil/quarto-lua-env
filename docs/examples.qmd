@@ -101,10 +101,18 @@ A path whose last part is absent gives one warning and renders nothing:
 (W) [lua-env] Variable 'pandoc.NOPE' not found in lua-env metadata.
 ```
 
+A path that resolves to `false` gives the same warning, because the shortcode tests the value rather than its presence.
+`pandoc.PANDOC_WRITER_OPTIONS.incremental` is such a path in a default render:
+
+```text
+(W) [lua-env] Variable 'pandoc.PANDOC_WRITER_OPTIONS.incremental' not found in lua-env metadata.
+```
+
 Two other shapes stop the render instead of reporting it:
 
 - A path whose middle part is absent, such as `pandoc.NOPE.name`, fails with `attempt to index a nil value`.
-- A path that names a branch rather than a value, such as `pandoc.PANDOC_WRITER_OPTIONS`, fails with `Inline expected, got table`.
+- A path that names a key-value branch, such as `pandoc.PANDOC_WRITER_OPTIONS`, fails with `Inline expected, got table`.
+  A list branch prints its items instead, as `pandoc.PANDOC_WRITER_OPTIONS.extensions` does above.
 
 Read a path off the tree in [What is published](reference.qmd#what-is-published) before you use it.
 
@@ -195,6 +203,7 @@ The file itself is one line, as the [Reference](reference.qmd#shape-of-the-file)
 
 A redacted path is removed with everything under it.
 `quarto.project` is not itself a redacted path, but two of its four entries are, `directory` and `output_directory`.
+The third, `offset`, survives.
 The fourth, `profile`, is an empty list when no Quarto profile is active, and an empty list is pruned:
 
 ```yaml
