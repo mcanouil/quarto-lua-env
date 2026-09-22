@@ -95,6 +95,9 @@ The warning under `json-warn-on-server` exists for the same reason: an export th
 
 ### Shape of the file
 
+The file is written as a single line, with no indentation and no guaranteed key order.
+The tree below is laid out for reading:
+
 ```json
 {
   "pandoc": {

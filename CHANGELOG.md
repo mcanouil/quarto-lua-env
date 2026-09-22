@@ -14,6 +14,7 @@
 ### Documentation
 
 - docs: Serve the extension's social card as the Open Graph image, so a shared link shows the card rather than the first image on the page. (#38)
+- docs: Add worked examples for deeper paths, paths that do not resolve, `json-file`, the redaction, and `json-warn-on-server`.
 
 ### Refactoring
 
