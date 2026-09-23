@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.0 (2026-09-23)
+
 ### New Features
 
 - feat: Split `json` into a boolean and a `json-file` path. They were one option accepting either, so `json: no` wrote a file called `no` rather than disabling the export. A document passing a path to `json` must be updated. (#41)
