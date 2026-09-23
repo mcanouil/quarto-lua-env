@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-quarto add mcanouil/quarto-lua-env@1.6.0
+quarto add mcanouil/quarto-lua-env@2.0.0
 ```
 
 This will install the extension under the `_extensions` subdirectory.
