@@ -21,6 +21,8 @@ website:
   description: "A Quarto extension that exposes the live Pandoc and Quarto Lua objects as document metadata, and optionally writes them to JSON."
   # No trailing slash: Quarto builds the social image URL by concatenating this
   # with the image path, without normalising.
+  # quarto-dev/quarto-cli#15053 normalises this join. Drop this note once the
+  # minimum Quarto version is the first release after 1.11.6.
   site-url: &site-url https://m.canouil.dev/quarto-lua-env
   repo-url: https://github.com/mcanouil/quarto-lua-env
   open-graph:
